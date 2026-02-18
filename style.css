@@ -1,0 +1,859 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgb(216, 174, 212);
+    gap: 2em;
+    font-family: 'Georgia', serif;
+}
+
+.instructions {
+    color: white;
+    font-size: 1em;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+    letter-spacing: .05em;
+    transition: opacity .5s;
+}
+
+.instructions.hidden {
+    opacity: 0;
+}
+
+div::before,
+div::after {
+    display: block;
+    content: "";
+    position: absolute;
+}
+
+/* ===== CAKE ===== */
+.cake {
+    --cake-main: rgb(245, 241, 232);
+    --cake-pink: lightpink;
+    --cake-dark-pink: rgb(242, 173, 184);
+    --cake-plate: rgb(235, 225, 225);
+
+    font-size: 27px;
+    width: 20em;
+    height: 10em;
+    background-repeat: no-repeat;
+    position: relative;
+
+    transition: background 0.6s ease;
+
+    background-image:
+        radial-gradient(ellipse, var(--cake-plate) 60%, rgba(255, 255, 255, 0) 60.5%),
+        radial-gradient(ellipse, #ccc 60%, rgba(255, 255, 255, 0) 60.5%);
+    background-size: 12em 3.2em, 12em 3.6em;
+    background-position: 50% 93%, 50% 100%;
+    z-index: 1;
+}
+
+.cake::before {
+    width: 8em;
+    height: 4.2em;
+    left: 6em;
+    bottom: 1.2em;
+    background-repeat: no-repeat;
+    background-image:
+        linear-gradient(var(--cake-main), var(--cake-main)),
+        linear-gradient(var(--cake-main), var(--cake-main)),
+        linear-gradient(var(--cake-dark-pink), var(--cake-dark-pink)),
+        linear-gradient(var(--cake-main), var(--cake-main)),
+        linear-gradient(var(--cake-main), var(--cake-main)),
+        repeating-linear-gradient(to bottom, saddlebrown, saddlebrown .6em, lightpink .6em, lightpink .8em);
+    background-size: 100% 100%, 50% 50%, 50% 2%, 50% 5%, 4% 76%, 45% 76%;
+    background-position: 0 100%, 0 0, 100% 0, 100% 0, 100.5% 20%, 100% 20%;
+    border-bottom-left-radius: 5em 1em;
+    border-bottom-right-radius: 5em 1em;
+    z-index: 3;
+}
+
+.cake::after {
+    width: 8em;
+    height: 1.8em;
+    left: 6em;
+    bottom: 4.5em;
+    background-repeat: no-repeat;
+    background-image:
+        linear-gradient(var(--cake-pink), var(--cake-pink)),
+        linear-gradient(32deg, var(--cake-pink) 59%, rgba(255, 215, 0, 0) 59.5%);
+    background-size: 100% 100%, 100% 100%;
+    background-position: 0 0, 0 100%;
+    border-radius: 50%;
+    z-index: 4;
+}
+
+.cake-topping {
+    position: absolute;
+    top: 4.65em;
+    left: 10em;
+    transform: translateX(-50%);
+    width: 8em;
+    height: 5.5em;
+    z-index: 99;
+    clip-path: polygon(0% 0%, 75% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+
+.cake-topping .topping-front {
+    width: 100%;
+    height: 55%;
+    background: linear-gradient(to bottom, var(--cake-pink) 0%, transparent);
+}
+
+.cake-topping .bottom-layer {
+    position: relative;
+    height: 70%;
+    background: var(--cake-pink);
+    clip-path: url('#my-clip-path');
+}
+
+.sprinkle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: transform .6s ease;
+    z-index: 150;
+}
+
+.sprinkle span {
+    position: absolute;
+    width: .6em;
+    height: .18em;
+    border-radius: .2em;
+    z-index: 100;
+    left: var(--x);
+    top: var(--y);
+    transform: rotate(var(--r));
+}
+
+/* ===== CANDLE ===== */
+.candle {
+    position: absolute;
+    z-index: 100;
+    bottom: 5.8em;
+    left: 9.8em;
+    width: .5em;
+    height: 2.5em;
+    background-color: rgb(228, 110, 205);
+    border-radius: 1em / .5em;
+    background-image: repeating-linear-gradient(45deg, white, white 10%, transparent 10%, transparent 20%);
+}
+
+.candle::before {
+    content: "";
+    position: absolute;
+    width: .1em;
+    height: .3em;
+    border-radius: .25em / .15em;
+    background-color: #333;
+    top: -.15em;
+    left: .2em;
+    z-index: 100;
+}
+
+.candle::after {
+    content: "";
+    width: .5em;
+    height: .25em;
+    background-color: rgb(228, 110, 205);
+    display: block;
+    border-radius: 50%;
+}
+
+/* ===== REMOVE CANDLE ANIMATION ===== */
+
+@keyframes liftCandle {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    70% {
+        transform: translateY(-4em);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-6em);
+        opacity: 0;
+    }
+}
+
+.candle.lifting {
+    animation: liftCandle .8s ease forwards;
+}
+
+/* ===== FLAME ===== */
+.flame-wrap {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1.4em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: auto;
+    transform-origin: bottom center;
+    z-index: 101;
+    cursor: pointer;
+}
+
+.flame {
+    width: 1.1em;
+    height: 1.5em;
+    position: relative;
+    animation: flicker 1.2s ease-in-out infinite alternate;
+    transform-origin: bottom center;
+    clip-path: polygon(50% 0%, 80% 40%, 92% 65%, 85% 85%, 65% 100%, 35% 100%, 15% 85%, 8% 65%, 20% 40%);
+    background: radial-gradient(ellipse at 50% 80%, #fff 0%, #fff8dc 15%, #ffd700 35%, #ff8c00 60%, #ff4500 85%, #c0392b 100%);
+    filter: blur(.6px) drop-shadow(0 0 6px rgba(255, 160, 0, .9)) drop-shadow(0 0 14px rgba(255, 80, 0, .5));
+    bottom: 0.05em;
+    z-index: 101;
+}
+
+.flame::before {
+    content: '';
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38%;
+    height: 55%;
+    clip-path: polygon(50% 0%, 78% 35%, 88% 60%, 80% 82%, 60% 100%, 40% 100%, 20% 82%, 12% 60%, 22% 35%);
+    background: radial-gradient(ellipse at 50% 85%, white 0%, #fffde0 50%, transparent 100%);
+    z-index: 101;
+}
+
+@keyframes flicker {
+    0% {
+        transform: scaleX(1) scaleY(1) rotate(-1deg);
+        opacity: 1;
+    }
+
+    25% {
+        transform: scaleX(.93) scaleY(1.04) rotate(1deg);
+        opacity: .97;
+    }
+
+    50% {
+        transform: scaleX(1.04) scaleY(.97) rotate(0deg);
+        opacity: 1;
+    }
+
+    75% {
+        transform: scaleX(.96) scaleY(1.03) rotate(-1.5deg);
+        opacity: .95;
+    }
+
+    100% {
+        transform: scaleX(1.02) scaleY(.98) rotate(1deg);
+        opacity: 1;
+    }
+}
+
+/* ===== BLOW-OUT ANIMATION ===== */
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.flame-wrap.blowing-out .flame {
+    animation: fadeOut 0.6s ease-out forwards !important;
+}
+
+.flame-wrap.blown-out .flame {
+    opacity: 0 !important;
+    animation: none !important;
+    visibility: hidden;
+}
+
+/* ===== SMOKE ===== */
+.smoke {
+    position: absolute;
+    bottom: calc(100% + 0.5em);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2em;
+    pointer-events: none;
+    z-index: 102;
+    display: none;
+}
+
+.smoke.visible {
+    display: block;
+}
+
+.smoke span {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(160, 160, 160, 0.6);
+    transform: translateX(-50%);
+}
+
+.smoke.puffing span:nth-child(1) {
+    animation: smokePuff 1.4s ease-out 0s forwards;
+    margin-left: -3px;
+}
+
+.smoke.puffing span:nth-child(2) {
+    animation: smokePuff 1.4s ease-out 0.18s forwards;
+    margin-left: 3px;
+}
+
+.smoke.puffing span:nth-child(3) {
+    animation: smokePuff 1.4s ease-out 0.35s forwards;
+    margin-left: -1px;
+}
+
+@keyframes smokePuff {
+    0% {
+        transform: translateX(-50%) translateY(0) scale(0.4);
+        opacity: 0.7;
+    }
+
+    40% {
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(-50px) scale(2.5);
+        opacity: 0;
+    }
+}
+
+.instructions {
+    position: fixed;
+    bottom: 5em;
+    left: 50%;
+    transform: translateX(-50%);
+
+    padding: 14px 28px;
+
+    background: rgba(255, 192, 203, 0.25);
+    /* pink glass */
+    backdrop-filter: blur(10px);
+
+    border: 2px solid #ff9ecb;
+    border-radius: 999px;
+    /* มนมาก */
+
+    color: white;
+    font-size: 1.1em;
+    font-weight: 500;
+    letter-spacing: .05em;
+
+    box-shadow:
+        0 8px 20px rgba(255, 105, 180, 0.25),
+        inset 0 0 10px rgba(255, 255, 255, 0.3);
+
+    text-align: center;
+
+    transition: all .3s ease;
+}
+
+/* ===== KNIFE ===== */
+
+.knife {
+    position: absolute;
+    width: 6em;
+    height: 1em;
+    background: linear-gradient(to right, #ddd, #fff, #bbb);
+    border-radius: 10px;
+    top: 0em;
+    left: 12em;
+    transform: rotate(-20deg);
+    opacity: 0;
+    z-index: 200;
+}
+
+/* ด้ามมีด */
+.knife::after {
+    content: "";
+    position: absolute;
+    right: -1.5em;
+    top: -0.1em;
+    width: 3em;
+    height: 1.2em;
+    background: #5a2d0c;
+    border-radius: 4px;
+}
+
+/* Animation เข้ามา */
+@keyframes knifeEnter {
+    0% {
+        left: -8em;
+        opacity: 0;
+    }
+
+    100% {
+        left: 12em;
+        opacity: 1;
+    }
+}
+
+/* Animation ตัด */
+@keyframes knifeCut {
+    0% {
+        top: -1em;
+        transform: rotate(-20deg);
+        opacity: 1;
+    }
+
+    50% {
+        top: 8em;
+        transform: rotate(-10deg);
+        opacity: 1;
+    }
+
+    100% {
+        top: -1em;
+        transform: rotate(-20deg);
+        opacity: 1;
+    }
+}
+
+.knife.show {
+    animation: knifeEnter .6s ease forwards;
+}
+
+.knife.cut {
+    animation: knifeCut .5s ease;
+}
+
+/* ===== CAKE CUT ANIMATION ===== */
+
+.cake.cutting::before {
+    animation: cakeBeforeCut .6s ease forwards;
+}
+
+.cake.cutting::after {
+    animation: cakeAfterCut .6s ease forwards;
+}
+
+@keyframes cakeBeforeCut {
+    to {
+        background-size:
+            69.5% 80%,
+            50% 50%,
+            50% 2%,
+            50% 5%,
+            4% 76%,
+            45% 76%;
+    }
+}
+
+@keyframes cakeAfterCut {
+    to {
+        background-size:
+            100% 50%,
+            100% 55%;
+    }
+}
+
+.cake.cutting .cake-topping {
+    clip-path: polygon(0% 0%,
+            55% 0%,
+            69.7% 14.5%,
+            69.7% 100%,
+            0% 100%);
+}
+
+.cake.cut-done {
+
+    background-image:
+        radial-gradient(ellipse, var(--cake-plate) 60%, rgba(255, 255, 255, 0) 60.5%),
+        radial-gradient(ellipse, #ccc 60%, rgba(255, 255, 255, 0) 60.5%),
+        linear-gradient(120deg, transparent 1.54em, var(--cake-main) 1em, var(--cake-main) 4.4em, transparent 4.4em),
+        linear-gradient(120deg, transparent 1.5em,
+            lightpink 1.5em,
+            lightpink 1.7em,
+            saddlebrown 1.7em,
+            saddlebrown 2.2em,
+            lightpink 2.2em,
+            lightpink 2.4em,
+            saddlebrown 2.4em,
+            saddlebrown 2.9em,
+            lightpink 2.9em,
+            lightpink 3.1em,
+            saddlebrown 3.1em,
+            saddlebrown 3.6em,
+            lightpink 3.6em,
+            lightpink 3.8em,
+            saddlebrown 3.8em,
+            saddlebrown 4.3em,
+            var(--cake-main) 4.3em,
+            var(--cake-main) 4.4em,
+            var(--cake-pink) 4.2em,
+            var(--cake-pink) 4.5em,
+            transparent 4.5em),
+        radial-gradient(ellipse at 50% 100%, var(--cake-dark-pink) 58.8%, rgba(255, 215, 0, 0) 59.5%),
+        linear-gradient(var(--cake-dark-pink), var(--cake-dark-pink)),
+        radial-gradient(ellipse, var(--cake-plate) 60%, rgba(255, 255, 255, 0) 60.5%),
+        radial-gradient(ellipse, #cccccc 60%, rgba(255, 255, 255, 0) 60.5%);
+
+    background-size:
+        12em 3.2em,
+        12em 3.6em,
+        6em .2em,
+        6em 2.1em,
+        2em 2.5em,
+        2em 1em,
+        9em 1.6em,
+        9em 1.9em,
+        .4em .4em,
+        .2em .2em,
+        .2em .2em,
+        1.5em 1.5em,
+        .9em .9em,
+        .9em .9em,
+        .6em .7em,
+        .6em .7em;
+
+    background-position:
+        0 93%,
+        0 100%,
+        right 1.55em bottom 4.5em,
+        right 1.5em bottom 2.6em,
+        right 1.4em bottom 2.6em,
+        right 2em bottom 2.6em,
+        right bottom 1.9em,
+        right bottom 1.6em,
+        left 5.45em bottom 6.9em,
+        left 5.3em bottom 7.6em,
+        left 5.8em bottom 7.6em,
+        left 4.9em bottom 6.7em,
+        left 4.7em bottom 7.7em,
+        left 5.7em bottom 7.7em,
+        left 4.4em bottom 6.7em,
+        left 6.4em bottom 6.7em;
+}
+.cake::before,
+.cake::after,
+.cake-topping,
+.sprinkle,
+.mini-envelope {
+    transition: left .6s ease, transform .6s ease;
+}
+
+.cake.cut-done::before {
+    left: 2em;
+}
+
+.cake.cut-done::after {
+    left: 2em;
+}
+
+.cake.cut-done .cake-topping {
+    left: 6em;
+}
+
+.cake.cut-done .sprinkle {
+    transform: translateX(-4em);
+}
+
+.cake.cut-done .mini-envelope {
+    left: 13em;
+}
+
+/* ===== ENVELOPE ===== */
+
+.envelope-wrapper {
+    position: fixed;
+    inset: 0;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, .4);
+    z-index: 9999;
+    display: none;
+}
+
+.envelope {
+    transform: scale(3);
+    transform-origin: center;
+    width: 200px;
+    height: 100px;
+    background: #ddd;
+    box-shadow:
+        0 0 1px rgba(0, 0, 0, 0.5),
+        0 1px 3px rgba(0, 0, 0, 0.25);
+    position: relative;
+    perspective: 800px;
+    background: #ffb6d5;
+    display: none;
+}
+
+.envelope:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border: 0 solid rgba(0, 0, 0, 0.25);
+    border-width: 45px 100px;
+    border-top-color: transparent;
+    z-index: 2;
+}
+
+.envelope .flap {
+    position: absolute;
+    width: 100%;
+    height: 0;
+    border: 0 solid transparent;
+    border-width: 50px 100px;
+    z-index: 3;
+}
+
+.envelope .flap.front {
+    border-left-color: #ffc7e3;
+    border-right-color: #ffc7e3;
+    border-bottom-color: #ff9fd0;
+    z-index: 3;
+}
+
+.envelope .flap.front:after {
+    content: '';
+    width: 100%;
+    height: 0;
+    position: absolute;
+    left: -100px;
+    bottom: -50px;
+    border: 0 solid transparent;
+    border-width: 49px 100px;
+    border-bottom-color: #ffc7e3;
+}
+
+.envelope .flap.top {
+    border-top-width: 55px;
+    border-top-color: #ff8fc2;
+    z-index: 3;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;  
+    -webkit-transform-origin-y: top;
+    -ms-transform-origin-y: top;
+    perspective: 800;
+    transform-style: preserve-3d;
+}
+
+.envelope .flap.top:after {
+    content: '';
+    position: absolute;
+    left: -100px;
+    /* border-left-width */
+    top: -55px;
+    /* border-top-width */
+    width: 100%;
+    height: 0;
+    border: 0 solid transparent;
+    border-width: 54px 100px;
+    border-top-color: #ffc7e3;
+}
+
+.envelope .letter {
+    position: absolute;
+    font-size: 0.05em;
+    width: 194px;
+    height: 84px;
+    background: #ffdefb;
+    top: 8px;
+    left: 3px;
+    border: .05em solid #ccc;
+    z-index: 1;
+    animation-duration: 2s;
+    animation-delay: 1.5s;
+    animation-fill-mode: forwards;
+    transform-style: preserve-3d;
+    padding: 0.2em;
+}
+
+.envelope.open .letter {
+    animation-name: remove;
+}
+
+.letter-content {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
+
+    font-family: 'Kanit', sans-serif;
+    font-size: 0.05em;
+    line-height: 1.5;
+    color: #7a2c5c;
+    padding: 18px;
+}
+
+.letter-content h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.1em;
+    margin-bottom: 6px;
+    color: #c2185b;
+}
+
+.letter-content p {
+    margin-bottom: 6px;
+}
+
+
+.envelope.open .flap.top {
+    animation-name: flip;
+}
+
+.envelope .letter:before,
+.envelope .letter:after {
+    content: '';
+    position: absolute;
+    width: 192px;
+    height: 75%;
+    left: -1px;
+    background: #ffdefb;
+    border: 1px solid #ccc;
+    animation-duration: 1s;
+    animation-delay: 4s;
+    animation-fill-mode: forwards;
+    -webkit-transform-origin-y: top;
+    -ms-transform-origin-y: top;
+    transform-style: preserve-3d;
+    transform: rotateX(10deg);
+}
+
+.envelope .letter:before {
+    z-index: 1;
+}
+
+.envelope.open .letter:before {
+    animation-name: fold-up;
+}
+
+.envelope .letter:after {
+    animation-delay: 5s;
+    animation-fill-mode: forwards;
+    -webkit-transform-origin-y: bottom;
+    -ms-transform-origin-y: bottom;
+    transform: rotateX(-5deg);
+    bottom: 0;
+}
+
+.envelope.open .letter:after {
+    animation-name: fold-down;
+}
+
+@keyframes flip {
+    100% {
+        transform: rotateX(180deg);
+        z-index: 1;
+    }
+}
+
+@keyframes remove {
+    50% {
+        top: -120px;
+    }
+
+    100% {
+        top: 8px;
+        z-index: 3;
+    }
+}
+
+@keyframes fold-up {
+    from {}
+
+    to {
+        transform: rotateX(140deg);
+    }
+}
+
+@keyframes fold-down {
+    from {}
+
+    to {
+        transform: rotateX(-140deg);
+    }
+}
+
+/* ===== MINI ENVELOPE ON CAKE ===== */
+
+.mini-envelope {
+    position: absolute;
+    width: 2.5em;
+    height: 1.3em;
+    background: #ffb6d5;
+    bottom: 3.8em;
+    left: 6em;
+    transform: rotate(12deg);
+    border-radius: .1em;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .2);
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 2;
+    clip-path: polygon(0% 0%,
+                100% 0%,
+                100% 70%,
+                90% 100%,
+                0% 100%);
+    display: none;
+}
+
+/* สามเหลี่ยมฝาซอง */
+.mini-envelope::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-left: 1.25em solid transparent;
+    border-right: 1.25em solid transparent;
+    border-top: .8em solid #ff8fc2;
+}
+
+.start-btn {
+    position: fixed;
+    bottom: 5em;
+    left: 50%;
+    transform: translateX(-50%);
+
+    padding: 14px 28px;
+
+    background: rgba(255, 192, 203, 0.25);
+    backdrop-filter: blur(10px);
+
+    border: 2px solid #ff9ecb;
+    border-radius: 999px;
+
+    color: white;
+    font-size: 1.1em;
+    font-weight: 500;
+    letter-spacing: .05em;
+
+    box-shadow:
+        0 8px 20px rgba(255, 105, 180, 0.25),
+        inset 0 0 10px rgba(255, 255, 255, 0.3);
+
+    cursor: pointer;
+    transition: all .3s ease;
+}
+
+.start-btn:hover {
+    transform: translateX(-50%) scale(1.05);
+}
