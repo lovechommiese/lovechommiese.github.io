@@ -14,7 +14,7 @@ const birthdaySong = document.getElementById('birthdaySong');
 let songStarted = false;
 
 let blowPower = 0;
-const extinguishThreshold = 400; // แรงลมที่ต้องการเพื่อดับเทียน
+const extinguishThreshold = 250; // แรงลมที่ต้องการเพื่อดับเทียน
 /* ========================= */
 /* 🎤 MIC SETUP */
 /* ========================= */
