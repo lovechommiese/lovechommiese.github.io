@@ -14,7 +14,7 @@ const birthdaySong = document.getElementById('birthdaySong');
 let songStarted = false;
 
 let blowPower = 0;
-const extinguishThreshold = 100; // แรงลมที่ต้องการเพื่อดับเทียน
+const extinguishThreshold = 60; // แรงลมที่ต้องการเพื่อดับเทียน
 /* ========================= */
 /* 🎤 MIC SETUP */
 /* ========================= */
@@ -24,6 +24,11 @@ async function initMic() {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        if (audioCtx.state === "suspended") {
+            await audioCtx.resume();
+        }
+
         const source = audioCtx.createMediaStreamSource(stream);
 
         const analyser = audioCtx.createAnalyser();
@@ -69,9 +74,9 @@ function handleBlow(volume) {
     if (isAnimating || isBlown) return;
 
     // ปรับ sensitivity ให้เห็นผลทันที
-    const sensitivity = 0.08;
+    const sensitivity = 0.12;
 
-    if (volume > 50) {
+    if (volume > 30) {
 
         blowPower += volume * sensitivity;
 
